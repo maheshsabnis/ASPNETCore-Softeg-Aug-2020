@@ -12,7 +12,7 @@ ASP.NET Core Technology
 		- Returns IHostBuilder and initialize the ASP.NET Core App
 		- Uses the 'Kestratl' Hosting Engine
 			- Manages all Application Dependencies
-				- Sessios
+				- Session
 				- Security
 				- Request Processing
 				- CORS
