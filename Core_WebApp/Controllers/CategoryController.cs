@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Core_WebApp.CustomSessions;
 using Core_WebApp.Models;
 using Core_WebApp.Repositories;
 using Microsoft.AspNetCore.Mvc;
@@ -47,15 +48,38 @@ namespace Core_WebApp.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(Category cat)
         {
-            // validate the model
-            if (ModelState.IsValid)
+            try
             {
-                cat = await catRepo.CreateAsync(cat);
-                // return the Index action methods from
-                // the current controller
-                return RedirectToAction("Index");
+                // validate the model
+                if (ModelState.IsValid)
+                {
+                    if (cat.BasePrice < 0)
+                        throw new Exception("Base Price cannot be -ve");
+                    cat = await catRepo.CreateAsync(cat);
+                    // return the Index action methods from
+                    // the current controller
+                    return RedirectToAction("Index");
+                }
+                return View(cat); // stey on same page and show error messages
             }
-            return View(cat); // stey on same page and show error messages
+            catch (Exception ex)
+            {
+                // return to error page
+                return View("Error", new ErrorViewModel() 
+                { 
+                  ControllerName = this.RouteData.Values["controller"].ToString(),
+                  ActionName = this.RouteData.Values["action"].ToString(),
+                  ErrorMessage = ex.Message
+                });
+            }
+        }
+
+        public IActionResult ShowDetails(int id)
+        {
+            Category cat = catRepo.GetAsync(id).Result;
+            HttpContext.Session.SetSessionData<Category>("cat", cat);
+
+            return RedirectToAction("Index", "Product");
         }
     }
 }

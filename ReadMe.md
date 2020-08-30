@@ -118,8 +118,22 @@ Programming With ASP.NET Core
 			- asp-validation-message: validations
 			- asp-for: Bind the model property to HTML element to read/write values
 		- The Microsoft.AspNetCore.Mvc.TagHelpers assembly defines Tag Helpers
+	- A View can accept 'Only-One' model object during scaffolding
+		- displaying data from more than one moedl in View
+		- Use ViewBag or ViewDataDictyionary to send data from multiple models to view
 5. Acton Filters
+	- Error Handling
+		- Error Hadling at Model Level (Recommended approach)
+		- Custom Model validations aka Domain specific model data validation
+			- Creat a custom classs derived from ValidationAttribuete class
+				- Override IsValid() method with logic of validation
+		- Error Handling for Process Based Execution aka while executing the business logic
+			- USe Exception Handling
 6. Sessions
+	- Add the InMemory Distributed Case Service to store sessions
+	- Use AddSession () method for session configuration
+	- By default only primptive types are stored in Sessions e.g. Number, String, Date, boolean, etc
+	- To store a CLR object in session use Custom Session Provider
 7. Security
 8. WEB API Programming
 	- Http Methods
@@ -133,3 +147,9 @@ Ex 1: Create Product Repository with CRUD methods and register it in DI
 EX 2: Complete Edit/Delete Method of the Category Controller by using Edit/Delete views
 Ex 3: Create ProductController with necessary DI
 Ex 4: Add Action method to perform CRUD operations for Products using all views.
+
+
+===========================================================================================
+Ex 4: Date 30-08-2020
+When the navigation takes place from Error View to the Controller, for Create View, 
+show the data thast has cause exception

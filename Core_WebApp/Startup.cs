@@ -33,6 +33,15 @@ namespace Core_WebApp
 
             // regiter Category and Product Repositories
             services.AddScoped<IRepository<Category, int>, CategoryRepository>();
+            services.AddScoped<IRepository<Product, int>, ProductRepository>();
+
+            // define sessions
+            // session will be stored in Cache
+            services.AddDistributedMemoryCache();
+            services.AddSession(session=> {
+                session.IdleTimeout = TimeSpan.FromMinutes(20);
+            });
+
 
             services.AddControllersWithViews();
         }
@@ -52,6 +61,10 @@ namespace Core_WebApp
             }
             app.UseHttpsRedirection();
             app.UseStaticFiles();
+
+            // use sessions
+            app.UseSession();
+
             // routing
             app.UseRouting();
 

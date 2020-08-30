@@ -18,6 +18,7 @@ namespace Core_WebApp.Models
         [StringLength(200, ErrorMessage = "Category Name can be max 200 characters")]
         public string CategoeyName { get; set; }
         [Required(ErrorMessage = "Base Price is Must")]
+      //  [NonNegativeValidator(ErrorMessage = "Value cannot be -ve")]
         public int BasePrice { get; set; }
         // Expected one-to-many relationship
         public ICollection<Product> Products { get; set; }
@@ -43,5 +44,15 @@ namespace Core_WebApp.Models
         // referential Integrity
         public Category Category { get; set; }
 
+    }
+
+
+    public class NonNegativeValidatorAttribute : ValidationAttribute
+    {
+        public override bool IsValid(object value)
+        {
+            if (Convert.ToInt32(value) < 0) return false; // invalid
+            return true; // valid
+        }
     }
 }
