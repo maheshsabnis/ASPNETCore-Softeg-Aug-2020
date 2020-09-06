@@ -2,14 +2,18 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Core_WebApp.CustomFilters;
 using Core_WebApp.CustomSessions;
 using Core_WebApp.Models;
 using Core_WebApp.Repositories;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace Core_WebApp.Controllers
 {
+   // [LogFilter] // controller level
+   [Authorize] // User Based AuthenticaTION BY DEFAULT
     public class CategoryController : Controller
     {
         private readonly IRepository<Category, int> catRepo;
@@ -48,8 +52,8 @@ namespace Core_WebApp.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(Category cat)
         {
-            try
-            {
+            //try
+            //{
                 // validate the model
                 if (ModelState.IsValid)
                 {
@@ -61,17 +65,17 @@ namespace Core_WebApp.Controllers
                     return RedirectToAction("Index");
                 }
                 return View(cat); // stey on same page and show error messages
-            }
-            catch (Exception ex)
-            {
-                // return to error page
-                return View("Error", new ErrorViewModel() 
-                { 
-                  ControllerName = this.RouteData.Values["controller"].ToString(),
-                  ActionName = this.RouteData.Values["action"].ToString(),
-                  ErrorMessage = ex.Message
-                });
-            }
+            //}
+            //catch (Exception ex)
+            //{
+            //    // return to error page
+            //    return View("Error", new ErrorViewModel() 
+            //    { 
+            //      ControllerName = this.RouteData.Values["controller"].ToString(),
+            //      ActionName = this.RouteData.Values["action"].ToString(),
+            //      ErrorMessage = ex.Message
+            //    });
+            //}
         }
 
         public IActionResult ShowDetails(int id)

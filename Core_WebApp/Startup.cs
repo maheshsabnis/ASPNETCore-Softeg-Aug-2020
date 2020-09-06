@@ -11,6 +11,9 @@ using Microsoft.Extensions.Hosting;
 using Core_WebApp.Models;
 using Microsoft.EntityFrameworkCore;
 using Core_WebApp.Repositories;
+using Core_WebApp.CustomFilters;
+using Core_WebApp.Data;
+using Microsoft.AspNetCore.Identity;
 
 namespace Core_WebApp
 {
@@ -27,10 +30,20 @@ namespace Core_WebApp
         public void ConfigureServices(IServiceCollection services)
         {
             // regisater the ShoppingDbContext class in DI COntainer
-            services.AddDbContext<ShoppingDbContext>(options => {
+            services.AddDbContext<ShoppingDbContext>(options =>
+            {
                 options.UseSqlServer(Configuration.GetConnectionString("eShoppingDbConnection"));
             });
 
+                services.AddDbContext<SecurityAuthDbContext>(options =>
+                    options.UseSqlServer(
+                        Configuration.GetConnectionString("SecurityAuthDbContextConnection")));
+
+                services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+                    .AddEntityFrameworkStores<SecurityAuthDbContext>();
+
+            services.AddAuthentication();
+           
             // regiter Category and Product Repositories
             services.AddScoped<IRepository<Category, int>, CategoryRepository>();
             services.AddScoped<IRepository<Product, int>, ProductRepository>();
@@ -42,8 +55,15 @@ namespace Core_WebApp
                 session.IdleTimeout = TimeSpan.FromMinutes(20);
             });
 
-
-            services.AddControllersWithViews();
+            // method is used to handle requests for MVC and API Controllers
+            // use the Overload of AddControllersWithViews() method that
+            // uses MvcOptions to register/apply filter in global scope
+            services.AddControllersWithViews(options => {
+               // options.Filters.Add(new LogFilter());
+                options.Filters.Add(typeof(AppExceptionFilter)); // resolve the modelmetadataprovider
+            });
+            // Request Processing for Razor Web Forms for identity
+            services.AddRazorPages();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -52,6 +72,8 @@ namespace Core_WebApp
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+               
+
             }
             else
             {
@@ -67,7 +89,7 @@ namespace Core_WebApp
 
             // routing
             app.UseRouting();
-
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
@@ -75,6 +97,7 @@ namespace Core_WebApp
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
+                endpoints.MapRazorPages(); // used for the Razor Web Forms for Idnetity  Pages
             });
         }
     }

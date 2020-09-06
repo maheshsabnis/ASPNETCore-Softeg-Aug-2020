@@ -129,12 +129,58 @@ Programming With ASP.NET Core
 				- Override IsValid() method with logic of validation
 		- Error Handling for Process Based Execution aka while executing the business logic
 			- USe Exception Handling
+	- Action Filters getes executed during the MVC and API Controller Request Processing
+		- Gloabl FIlter->Controller Filter->Action Filter (OnActionExecuting)
+		- (OnActionExecuted) ActionFilter -> Controller Filter -> Global Filter 
+			- Custom Filters for
+					- Logging
+					- Exception Management (Recommended to use the Middlewares)	
+			- IActionFilter Interface must be implemented by the custom filter class
+			- ActionFilterAttribute, the abatrsct base class or custom filters to override the 
+				Result execution
 6. Sessions
 	- Add the InMemory Distributed Case Service to store sessions
 	- Use AddSession () method for session configuration
 	- By default only primptive types are stored in Sessions e.g. Number, String, Date, boolean, etc
 	- To store a CLR object in session use Custom Session Provider
 7. Security
+	- Secure Access to the controller
+		- User Credentials security, simple User based authentication (default)
+		- Role based security, simple Role based authorization
+		- Policy Based Authentication, enhancements in RBS, we group roles to define access policies
+			- e.g. Read/Write, etc.
+		- Cloud based OpenId Aothentication aks OpenIdConnect using Cloud AD e.g. Azure Active Directory
+		- Token Based Authentication, used for API Securty
+			- Third Party client apps using API
+	- Microsoft.AspNetCore.Identity, package with
+		- UserManager<IdentityUser>
+			- Used for User and Role Management
+			- Add Role to User
+		- RoleManager<IdentityRole>
+			- Class used for Role Management
+		- SingInManager<IdentityUser>
+			- Manage the User SignIn	
+		- Identity Middleware
+			- AddDefaultIdentity<IdentityUser>()
+				- Service method to Provide User Based Authentication
+			- AddIdentity<IdentityUser, IdentityRole>()
+				- Service Method to provide Role Based Authentication and Authorization
+			- AddAuthentication(),
+				- Serice method to provide USer Based Auth using EntityFraeworkCore
+					- Microsoft.AspNetCore.Identity.EntityFrameworkCore package
+				- Define scehams for Authentication (default is Basic)
+				- Can define schemas for Token Based Authentication
+			- AddAuthorization()
+				- Service method to manage Roles and authorization using 
+					- Microsoft.AspNetCore.Identity.EntityFrameworkCore package
+				- Configured for Policy Based Authentications
+			- UseAuthentication()
+				- Middleware  that provides the User Based Auth, for HttpContext and HttpRequest in it
+			- UserAuthorization()
+				- Middleware that is used to execute Httprequest in HttpContext based on Role-Based-Security		
+		- Identity Scaffolder as Razor UI Library to provides Views for Identity
+			- All these veiws are Razor WebForms
+
 8. WEB API Programming
 	- Http Methods
 	- JWT Token Security
@@ -153,3 +199,15 @@ Ex 4: Add Action method to perform CRUD operations for Products using all views.
 Ex 4: Date 30-08-2020
 When the navigation takes place from Error View to the Controller, for Create View, 
 show the data thast has cause exception
+===========================================================================================
+Ex 5: Date 06-09-2020
+Modify the Custom Exception Filter to Log the Exception along with request details e.g. Model posted
+error message in database. The database must have table called as RequestLog, that will log all messagess
+along with exception message using following structure
+	- Request Id
+	- ControllerName
+	- ActionName
+	- DateTime
+	- ExceutionStatus (Successs/excepion)
+	- ExceptionType e.g. Database exception /custom exception etc.
+	- ExceptionMessage
