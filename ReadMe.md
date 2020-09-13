@@ -180,6 +180,15 @@ Programming With ASP.NET Core
 				- Middleware that is used to execute Httprequest in HttpContext based on Role-Based-Security		
 		- Identity Scaffolder as Razor UI Library to provides Views for Identity
 			- All these veiws are Razor WebForms
+	- Adding Roles by creating a new RoleController and its action methods for creating roles and vies
+		to create and list roles.
+			- RoeManager<IdentityRole>
+				- CreateAsync() method to create role
+				- The 'Roles' an IEnumerable<IdentityRole>
+	- Assign tole to user while creating user.
+	- Policy Based  Authentication
+		- A new approach for clubing multiple Roles together inso single policy
+		- Define the policies using PolicyBuilder class in 'AddAuthorization()' service method
 
 8. WEB API Programming
 	- Http Methods
@@ -211,3 +220,11 @@ along with exception message using following structure
 	- ExceutionStatus (Successs/excepion)
 	- ExceptionType e.g. Database exception /custom exception etc.
 	- ExceptionMessage
+
+
+Date 13-09-2020
+
+Ex 6: Create a default 'Administrator' role in Application Startup and admin@myuser.com as default user.
+Add admin@myuser.com to the Administrator Role. (Write this logic in 'Configure()' method)
+1. RoleController, can be accessed only by Administrator Role users
+2. Modify the RoleController to assign Role to User

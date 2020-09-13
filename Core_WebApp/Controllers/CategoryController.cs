@@ -13,7 +13,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Internal;
 namespace Core_WebApp.Controllers
 {
    // [LogFilter] // controller level
-   [Authorize] // User Based AuthenticaTION BY DEFAULT
+  // [Authorize] // User Based AuthenticaTION BY DEFAULT
     public class CategoryController : Controller
     {
         private readonly IRepository<Category, int> catRepo;
@@ -28,6 +28,8 @@ namespace Core_WebApp.Controllers
         /// Http Get methdo to return Index view with List of Categories
         /// </summary>
         /// <returns></returns>
+        /// 
+        [Authorize(Policy = "ReadPolicy")]
         public async Task<IActionResult> Index()
         {
             var cats = await catRepo.GetAsync();
@@ -38,6 +40,8 @@ namespace Core_WebApp.Controllers
         /// Http Get method that will return empty View for accepting Cateogry Data 
         /// </summary>
         /// <returns></returns>
+        /// 
+        [Authorize(Policy ="WritePolicy")]
         public IActionResult Create()
         {
             var cat = new Category();

@@ -10,6 +10,8 @@ namespace Core_WebApp.Data
 {
     public class SecurityAuthDbContext : IdentityDbContext<IdentityUser>
     {
+        // Users/Roles
+        // IdentityUser IdentitRole
         public SecurityAuthDbContext(DbContextOptions<SecurityAuthDbContext> options)
             : base(options)
         {

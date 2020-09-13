@@ -38,11 +38,28 @@ namespace Core_WebApp
                 services.AddDbContext<SecurityAuthDbContext>(options =>
                     options.UseSqlServer(
                         Configuration.GetConnectionString("SecurityAuthDbContextConnection")));
+            // used to resolve UserManager<IdentityUser>, SignInManager<IdentityUser>
+            //services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+            //    .AddEntityFrameworkStores<SecurityAuthDbContext>();
 
-                services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
-                    .AddEntityFrameworkStores<SecurityAuthDbContext>();
+            // used to resolve UserManager<IdentityUser>, RoleManager<IdentitRole> 
+            // SignInManager<IdentityUser>
+            services.AddIdentity<IdentityUser,IdentityRole>(
+                //options => options.SignIn.RequireConfirmedAccount = true
+                )
+                 .AddEntityFrameworkStores<SecurityAuthDbContext>();
+
 
             services.AddAuthentication();
+            // defining authorization rules 
+            services.AddAuthorization(options => {
+                options.AddPolicy("ReadPolicy", policy => {
+                    policy.RequireRole("Manager", "Clerk", "Operator");
+                });
+                options.AddPolicy("WritePolicy", policy => {
+                    policy.RequireRole("Manager", "Clerk");
+                });
+            });
            
             // regiter Category and Product Repositories
             services.AddScoped<IRepository<Category, int>, CategoryRepository>();
@@ -54,7 +71,7 @@ namespace Core_WebApp
             services.AddSession(session=> {
                 session.IdleTimeout = TimeSpan.FromMinutes(20);
             });
-
+           
             // method is used to handle requests for MVC and API Controllers
             // use the Overload of AddControllersWithViews() method that
             // uses MvcOptions to register/apply filter in global scope
