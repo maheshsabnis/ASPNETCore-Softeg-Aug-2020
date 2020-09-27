@@ -14,6 +14,8 @@ using Core_WebApp.Repositories;
 using Core_WebApp.CustomFilters;
 using Core_WebApp.Data;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Core_WebApp.CustoMiddlewares;
 
 namespace Core_WebApp
 {
@@ -29,6 +31,30 @@ namespace Core_WebApp
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+
+
+            services.ConfigureApplicationCookie(options => {
+                options.Cookie.HttpOnly = true;
+                options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
+                options.LoginPath = "/Login";
+                options.AccessDeniedPath = "/AccessDenied";
+                options.SlidingExpiration = true;
+                options.Events = new CookieAuthenticationEvents
+                {
+                    OnRedirectToLogin = ctx => {
+                        var requestPath = ctx.Request.Path;
+                        if (requestPath.StartsWithSegments("/Account"))
+                        {
+                            ctx.Response.Redirect("/Account?ReturnUrl=" + requestPath + ctx.Request.QueryString);
+                        }
+                        else
+                        {
+                            ctx.Response.Redirect("/Login?ReturnUrl=" + requestPath + ctx.Request.QueryString);
+                        }
+                        return Task.CompletedTask;
+                    }
+                };
+            });
             // regisater the ShoppingDbContext class in DI COntainer
             services.AddDbContext<ShoppingDbContext>(options =>
             {
@@ -49,6 +75,12 @@ namespace Core_WebApp
                 )
                  .AddEntityFrameworkStores<SecurityAuthDbContext>();
 
+            services.AddCors(options=> {
+                options.AddPolicy("corspolicy", policy=> {
+                    policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
+                
+                });
+            });
 
             services.AddAuthentication();
             // defining authorization rules 
@@ -75,10 +107,17 @@ namespace Core_WebApp
             // method is used to handle requests for MVC and API Controllers
             // use the Overload of AddControllersWithViews() method that
             // uses MvcOptions to register/apply filter in global scope
-            services.AddControllersWithViews(options => {
-               // options.Filters.Add(new LogFilter());
-                options.Filters.Add(typeof(AppExceptionFilter)); // resolve the modelmetadataprovider
+            services.AddControllersWithViews(
+               // options => {
+               //// options.Filters.Add(new LogFilter());
+               // options.Filters.Add(typeof(AppExceptionFilter)); // resolve the modelmetadataprovider
+           // }
+        ).AddJsonOptions(options => {
+                options.JsonSerializerOptions.PropertyNamingPolicy = null;
             });
+            // API Controllers
+            // reads the URL, Read Request Type and MAP to HTTP Method Attribute(?)
+           // services.AddControllers(); 
             // Request Processing for Razor Web Forms for identity
             services.AddRazorPages();
         }
@@ -103,11 +142,23 @@ namespace Core_WebApp
 
             // use sessions
             app.UseSession();
+            // use the CORS policy
+            app.UseCors("corspolicy");
 
             // routing
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();
+
+            //app.UseStatusCodePages(async context => {
+            //    if (context.HttpContext.Response.StatusCode == 403)
+            //    {
+            //        app.UseExceptionHandler("/Account/AccessDenied");
+            //    }
+            //});
+
+            // apply the custom middleware
+            app.UseCustomeException();
 
             app.UseEndpoints(endpoints =>
             {
@@ -115,6 +166,7 @@ namespace Core_WebApp
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
                 endpoints.MapRazorPages(); // used for the Razor Web Forms for Idnetity  Pages
+
             });
         }
     }

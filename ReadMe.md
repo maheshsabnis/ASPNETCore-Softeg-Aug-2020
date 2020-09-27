@@ -192,8 +192,39 @@ Programming With ASP.NET Core
 
 8. WEB API Programming
 	- Http Methods
-	- JWT Token Security
+		- HttpGet / HttpGet("<Template Expression to read values from Headers>")
+		- HttpPost/ HttpPost("<Template Expression to read values from Headers>")
+		- HttpPut / ----//----
+		- HttpDelete / ----//----
+		- HttpPatch / ----//----
+	- Define the JSON options for serailications for serializing CLR object in original
+	property names instead of camel case
+	- ApiControllerAttribute is a class applied on API Controller class. This is used to map 
+	   the HTTP Request BODY  from HTTP  POST and PUT Request  to the CLR Object passed to the
+	   action method.
+	   - Parameter Model Binders
+		- FromBody
+			- Read data from HTTP Request Body and map with CLR Object
+		- FromRoute
+			- Read data from HTTP Router Parameters and   map with CLR Object
+		- FromQuery
+			- Read data from HTTP Query String and  map with CLR Object
+		- FromForm
+			- REad data from HTML FormModel (HTML 5) and  map with CLR Object
+	- JWT Token Security 
 9. Middlewares
+	- CReate a class that is ctor injected with RequestDelegat
+		- this delegate accepts HttpContext as input parameter 
+	- The class will have InvokeAsync() method, that accepts HttpContext as input parameter
+		- this method contains logic for Middleware
+	- Create an externsion class with extension methid for IApplicationBuilder to register
+		the middleware
+
+10. The Cross-Origin-Resource-Sharing (Thee CORS Policy)
+	- ust be defined by the service so that Browser CLients (aka JavaScript) clients from different
+		origin are able to access teh APIs.
+			- services.AddCors(); --> to Set CORS policies
+			- app.UseCors(); --> To apply the CORS middleware
 10. Deployment
 
 
@@ -228,3 +259,15 @@ Ex 6: Create a default 'Administrator' role in Application Startup and admin@myu
 Add admin@myuser.com to the Administrator Role. (Write this logic in 'Configure()' method)
 1. RoleController, can be accessed only by Administrator Role users
 2. Modify the RoleController to assign Role to User
+
+
+EX 7: CReate a Custom Middleare that will log the information of  Each Expcption Request  into 
+database with excpeiton information as follows
+	- User Name (Read this from the Request Header)
+		- HttpCOntext.Request.Headers.Authorization
+			- Provide the USer Name
+		- Exception Message
+		- The Model Data Passed as Request.
+			- Write a custom Exception class that will read all the Model Errors
+				- ModelState
+Mail the solution on sabnis_m@hotmail.com
