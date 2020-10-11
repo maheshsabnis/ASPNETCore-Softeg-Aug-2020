@@ -212,6 +212,23 @@ Programming With ASP.NET Core
 		- FromForm
 			- REad data from HTML FormModel (HTML 5) and  map with CLR Object
 	- JWT Token Security 
+		- Token is a Randomly generated values that contains identity information (aka Claim), thst is 
+		used to verify the client (Authentication) with its access rights (Authorization) and proides
+		access of the API 
+			- Json Web Tokens (JWT)
+				- W3C standard corss platform mechanism of Authenticating the client App.
+				- 3 Secitions of JWT
+					- Header
+						- Algorithm to encrypt the information of identity
+					- Payload
+						- The Identity Claim used by the client to access the API
+							- UserId or RoleId
+							- UserId and RoleId
+					- Signeture
+						- The value to check an integrity of the Token aka Crypto Signeture
+			- Security Access Markup Language (SAML) Tokens
+				- Used by the Active Directory to provides secure idneityt to client  
+			- AUTHORIZATION 'Bearer <TOKEN>'
 9. Middlewares
 	- CReate a class that is ctor injected with RequestDelegat
 		- this delegate accepts HttpContext as input parameter 
@@ -225,7 +242,18 @@ Programming With ASP.NET Core
 		origin are able to access teh APIs.
 			- services.AddCors(); --> to Set CORS policies
 			- app.UseCors(); --> To apply the CORS middleware
-10. Deployment
+11. Deployment
+	- On-Premises Deployment
+		- Self Host
+		- IIS 
+			- COnfigure Database Server having IIS Access Rights
+	- Cloud
+		- Microsoft Azure
+			- Migrate Databases to Azure
+			- Modify the COnnection String in Application
+			- Deploye the App on Azure App Service
+	- DOcker
+		- Recommended only in case of Microservices
 
 
 ==================================================================================================

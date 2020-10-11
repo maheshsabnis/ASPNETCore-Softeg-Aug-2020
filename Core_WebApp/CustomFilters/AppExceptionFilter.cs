@@ -26,6 +26,7 @@ namespace Core_WebApp.CustomFilters
         /// <param name="context"></param>
         public override void OnException(ExceptionContext context)
         {
+            
             // Handle Exception to complete the process
             context.ExceptionHandled = true;
             // read the error message
